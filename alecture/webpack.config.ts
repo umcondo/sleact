@@ -73,16 +73,19 @@ const config: webpack.Configuration = {
     filename: '[name].js',
     publicPath: '/dist/',
   },
+  // 핫 리로딩
   devServer: {
     historyApiFallback: true, // react router
     port: 3090,
     publicPath: '/dist/',
-    // proxy: {
-    //   '/api/': {
-    //     target: 'http://localhost:3095',
-    //     changeOrigin: true,
-    //   },
-    // },
+    // CORS 에러 해결법 front에서 api path로 보낸 것은 3095가 보낸 것처럼 취급하겠다.
+    // 백엔드와 프론트 서버의 포트가 다르므로
+    proxy: {
+      '/api/': {
+        target: 'http://localhost:3095',
+        changeOrigin: true,
+      },
+    },
   },
 };
 
