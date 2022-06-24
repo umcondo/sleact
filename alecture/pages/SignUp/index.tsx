@@ -1,12 +1,16 @@
 import useInput from '@hooks/useInput';
+import fetcher from '@utils/fetcher';
 import axios from 'axios';
 import React, { useCallback, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, Navigate } from 'react-router-dom';
+import useSWR from 'swr';
 
 // css in js
 import { Success, Form, Error, Label, Input, LinkContainer, Button, Header } from './styles';
 
 const SignUp = () => {
+  const { data, error, mutate } = useSWR('http://localhost:3095/api/users', fetcher);
+
   // 화면에 표시하는 데이터는 항상 상태로 만들어야함
   const [email, setEmail, onChangeEmail] = useInput('');
   const [nickname, setNickname, onChangeNickname] = useInput('');
@@ -51,7 +55,7 @@ const SignUp = () => {
         console.log('서버로 회원가입 하기');
         axios
           // .post('http://localhost:3095/api/users', { email, nickname, password })
-          .post('/api/users', { email, nickname, password }) // 3095 -> 3095, 3090 -> 3095(기존)
+          .post('http://localhost:3095/api/users', { email, nickname, password }, { withCredentials: true }) // 3095 -> 3095, 3090 -> 3095(기존)
           .then((response) => {
             // 성공
             console.log(response);
@@ -67,6 +71,14 @@ const SignUp = () => {
     },
     [email, nickname, password, passwordCheck, mismatchError],
   );
+
+  if (data === undefined) {
+    return <div>로딩중</div>;
+  }
+  // return은 항상 hooks 뒤에 있어야함!!
+  if (data) {
+    return <Navigate replace to="/workspace/channel" />;
+  }
 
   return (
     <div id="container">
