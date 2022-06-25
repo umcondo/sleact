@@ -77,7 +77,7 @@ const SignUp = () => {
   }
   // return은 항상 hooks 뒤에 있어야함!!
   if (data) {
-    return <Navigate replace to="/workspace/channel" />;
+    return <Navigate replace to="/workspace/sleact/channel/일반" />;
   }
 
   return (

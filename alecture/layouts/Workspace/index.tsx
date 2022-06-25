@@ -2,7 +2,7 @@ import axios from 'axios';
 import React, { FC, useCallback } from 'react';
 import useSWR from 'swr';
 import fetcher from '@utils/fetcher';
-import { Navigate, Route, Routes } from 'react-router';
+import { Navigate, Outlet, Route, Routes } from 'react-router';
 import {
   Channels,
   Chats,
@@ -20,7 +20,7 @@ import loadable from '@loadable/component';
 const Channel = loadable(() => import('@pages/Channel'));
 const DirectMessage = loadable(() => import('@pages/DirectMessage'));
 
-const Workspace: FC<React.PropsWithChildren<{}>> = ({ children }) => {
+const Workspace: FC<React.PropsWithChildren<{}>> = () => {
   const { data, error, mutate } = useSWR('http://localhost:3095/api/users', fetcher);
 
   const onLogout = useCallback(() => {
@@ -52,8 +52,8 @@ const Workspace: FC<React.PropsWithChildren<{}>> = ({ children }) => {
         </Channels>
         <Chats>
           <Routes>
-            <Route path="/channel/:channel" element={<Channel />} />
-            <Route path="/dm/:id" element={<DirectMessage />} />
+            <Route path="channel/:channel" element={<Channel />} />
+            <Route path="dm/:id" element={<DirectMessage />} />
           </Routes>
         </Chats>
       </WorkspaceWrapper>
