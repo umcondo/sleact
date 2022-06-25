@@ -6,7 +6,7 @@ import { Link, Navigate } from 'react-router-dom';
 import useSWR from 'swr';
 
 // css in js
-import { Success, Form, Error, Label, Input, LinkContainer, Button, Header } from './styles';
+import { Success, Form, Error, Label, Input, LinkContainer, Button, Header } from '@pages/SignUp/styles';
 
 const SignUp = () => {
   const { data, error, mutate } = useSWR('http://localhost:3095/api/users', fetcher);
