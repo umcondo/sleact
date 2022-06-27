@@ -31,6 +31,8 @@ import { toast } from 'react-toastify';
 import CreateChannelModal from '@components/CreateChannelModal';
 import InviteWorkspaceModal from '@components/InviteWorkspaceModal';
 import InviteChannelModal from '@components/InviteChannelModal';
+import ChannalList from '@components/ChannalList';
+import DMList from '@components/DMList';
 
 const Channel = loadable(() => import('@pages/Channel'));
 const DirectMessage = loadable(() => import('@pages/DirectMessage'));
@@ -39,7 +41,7 @@ const Workspace: React.VFC = () => {
   const { workspace } = useParams<{ workspace: string }>();
 
   // 유저 데이터
-  const { data, error, mutate } = useSWR<IUser | false>('/api/users', fetcher);
+  const { data, error, mutate } = useSWR<IUser | false>('/api/users', fetcher, { dedupingInterval: 2000 });
 
   // 채널 데이터, 조건부 요청
   const { data: channelData } = useSWR<IChannel[]>(data ? `/api/workspaces/${workspace}/channels` : null, fetcher);
@@ -177,9 +179,8 @@ const Workspace: React.VFC = () => {
                 <button onClick={onLogout}>로그아웃</button>
               </WorkspaceModal>
             </Menu>
-            {channelData?.map((v) => (
-              <div>{v.name}</div>
-            ))}
+            <ChannalList />
+            <DMList />
           </MenuScroll>
         </Channels>
         <Chats>
