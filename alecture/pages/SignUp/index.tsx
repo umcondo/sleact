@@ -9,7 +9,7 @@ import useSWR from 'swr';
 import { Success, Form, Error, Label, Input, LinkContainer, Button, Header } from '@pages/SignUp/styles';
 
 const SignUp = () => {
-  const { data, error, mutate } = useSWR('http://localhost:3095/api/users', fetcher);
+  const { data, error, mutate } = useSWR('/api/users', fetcher);
 
   // 화면에 표시하는 데이터는 항상 상태로 만들어야함
   const [email, setEmail, onChangeEmail] = useInput('');
@@ -54,8 +54,8 @@ const SignUp = () => {
         setSignUpSuccess(false);
         console.log('서버로 회원가입 하기');
         axios
-          // .post('http://localhost:3095/api/users', { email, nickname, password })
-          .post('http://localhost:3095/api/users', { email, nickname, password }, { withCredentials: true }) // 3095 -> 3095, 3090 -> 3095(기존)
+          // .post('/api/users', { email, nickname, password })
+          .post('/api/users', { email, nickname, password }, { withCredentials: true }) // 3095 -> 3095, 3090 -> 3095(기존)
           .then((response) => {
             // 성공
             console.log(response);

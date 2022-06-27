@@ -39,16 +39,16 @@ const Workspace: React.VFC = () => {
   const { workspace } = useParams<{ workspace: string }>();
 
   // 유저 데이터
-  const { data, error, mutate } = useSWR<IUser | false>('http://localhost:3095/api/users', fetcher);
+  const { data, error, mutate } = useSWR<IUser | false>('/api/users', fetcher);
 
   // 채널 데이터, 조건부 요청
-  const { data: channelData } = useSWR<IChannel[]>(
-    data ? `http://localhost:3095/api/workspaces/${workspace}/channels` : null,
-    fetcher,
-  );
+  const { data: channelData } = useSWR<IChannel[]>(data ? `/api/workspaces/${workspace}/channels` : null, fetcher);
+
+  // 멤버 데이터
+  const { data: memberData } = useSWR<IUser[]>(data ? `/api/workspaces/${workspace}/members` : null, fetcher);
 
   const onLogout = useCallback(() => {
-    axios.post('http://localhost:3095/api/users/logout', null, { withCredentials: true }).then(() => {
+    axios.post('/api/users/logout', null, { withCredentials: true }).then(() => {
       //mutate : 서버에 요청하지 않고 클라에서 이전에 받아온 데이터를 고침
       mutate(false, false); // 두번째 자리에 false를 넣어야 다시 안감
     });
@@ -87,7 +87,7 @@ const Workspace: React.VFC = () => {
 
       axios
         .post(
-          'http://localhost:3095/api/workspaces',
+          '/api/workspaces',
           { workspace: newWorkspace, url: newUrl },
           {
             withCredentials: true,

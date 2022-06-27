@@ -19,7 +19,7 @@ const InviteChannelModal: FC<Props> = ({ show, onCloseModal, setShowInviteChanne
   const [newMember, setNewMember, onChangeNewMember] = useInput('');
   const { data: userData } = useSWR<IUser>('/api/users', fetcher);
   const { mutate: mutateMembers } = useSWR<IUser[]>(
-    userData && channel ? `http://localhost:3095/api/workspaces/${workspace}/channels/${channel}/members` : null,
+    userData && channel ? `/api/workspaces/${workspace}/channels/${channel}/members` : null,
     fetcher,
   );
 
