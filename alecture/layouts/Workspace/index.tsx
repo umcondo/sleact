@@ -1,5 +1,5 @@
 import axios from 'axios';
-import React, { FC, useCallback, useState } from 'react';
+import React, { FC, useCallback, useEffect, useState } from 'react';
 import useSWR from 'swr';
 import fetcher from '@utils/fetcher';
 import { Navigate, Outlet, Route, Routes, useParams } from 'react-router';
@@ -33,11 +33,12 @@ import InviteWorkspaceModal from '@components/InviteWorkspaceModal';
 import InviteChannelModal from '@components/InviteChannelModal';
 import ChannalList from '@components/ChannalList';
 import DMList from '@components/DMList';
+import useSocket from '@hooks/useSocket';
 
 const Channel = loadable(() => import('@pages/Channel'));
 const DirectMessage = loadable(() => import('@pages/DirectMessage'));
 
-const Workspace: React.VFC = () => {
+const Workspace = () => {
   const { workspace } = useParams<{ workspace: string }>();
 
   // 유저 데이터
@@ -49,12 +50,29 @@ const Workspace: React.VFC = () => {
   // 멤버 데이터
   const { data: memberData } = useSWR<IUser[]>(data ? `/api/workspaces/${workspace}/members` : null, fetcher);
 
+  // 소켓
+  const [socket, disconnect] = useSocket(workspace);
+
+  useEffect(() => {
+    if (channelData && data && socket) {
+      console.log(socket);
+      socket.emit('login', { id: data.id, channels: channelData.map((y) => y.id) });
+    }
+  }, [socket, channelData, data]);
+
+  // workspace변경시 disconnect해야함
+  useEffect(() => {
+    return () => {
+      disconnect();
+    };
+  }, [workspace, disconnect]);
+
   const onLogout = useCallback(() => {
     axios.post('/api/users/logout', null, { withCredentials: true }).then(() => {
       //mutate : 서버에 요청하지 않고 클라에서 이전에 받아온 데이터를 고침
       mutate(false, false); // 두번째 자리에 false를 넣어야 다시 안감
     });
-  }, []);
+  }, [mutate]);
 
   const [showUserMenu, setShowUserMenu] = useState(false);
   const [showWorkspaceModal, setShowWorkspaceModal] = useState(false);
@@ -108,7 +126,7 @@ const Workspace: React.VFC = () => {
           toast.error(error.response?.data, { position: 'bottom-center' });
         });
     },
-    [newWorkspace, newUrl],
+    [newWorkspace, newUrl, mutate, setnewUrl, setNewWorkspace],
   );
   const toggleWorkspaceModal = useCallback(() => {
     setShowWorkspaceModal((prev) => !prev);
