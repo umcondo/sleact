@@ -1,4 +1,5 @@
 import styled from '@emotion/styled';
+import { MentionsInput } from 'react-mentions';
 
 export const ChatArea = styled.div`
   display: flex;
@@ -15,7 +16,8 @@ export const Form = styled.form`
   border: 1px solid rgb(29, 28, 29);
 `;
 
-export const MentionsTextarea = styled.textarea`
+// 기존에 있는 컴포넌트에 css를 추가하는 방법
+export const MentionsTextarea = styled(MentionsInput)`
   font-family: Slack-Lato, appleLogo, sans-serif;
   font-size: 15px;
   padding: 8px 9px;

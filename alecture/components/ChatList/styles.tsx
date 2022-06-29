@@ -3,7 +3,6 @@ import styled from '@emotion/styled';
 export const ChatZone = styled.div`
   width: 100%;
   display: flex;
-  flex-direction: column;
   flex: 1;
 `;
 

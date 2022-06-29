@@ -55,8 +55,8 @@ const Workspace = () => {
 
   useEffect(() => {
     if (channelData && data && socket) {
-      console.log(socket);
-      socket.emit('login', { id: data.id, channels: channelData.map((y) => y.id) });
+      // console.log(socket);
+      socket.emit('login', { id: data.id, channels: channelData.map((v) => v.id) });
     }
   }, [socket, channelData, data]);
 
