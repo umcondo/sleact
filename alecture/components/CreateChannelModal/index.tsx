@@ -46,7 +46,7 @@ const CreateChannelModal: FC<Props> = ({ show, onCloseModal, setShowCreateChanne
           toast.error(error.response?.data, { position: 'bottom-center' });
         });
     },
-    [newChannel],
+    [newChannel, setShowCreateChannelModal, setNewChannel, channelMutate, workspace],
   );
 
   return (

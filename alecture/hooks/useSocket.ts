@@ -11,7 +11,8 @@ const useSocket = (workspace?: string): [SocketIOClient.Socket | undefined, () =
   // 연결 해제
   const disconnect = useCallback(() => {
     if (workspace) {
-      sockets[workspace].disconnect();
+      // sockets[workspace].disconnect(); // 새로고침 시 undefine 이슈해결
+      sockets[workspace]?.disconnect();
       delete sockets[workspace]; // 객체 삭제
     }
   }, [workspace]);

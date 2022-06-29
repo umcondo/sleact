@@ -32,8 +32,8 @@ const Login = () => {
           },
         )
         .then((response) => {
-          mutate(response.data, false); // OPTIMISTIC UI
-          // mutate(response.data);
+          // mutate(response.data, false); // OPTIMISTIC UI
+          mutate(); // 위에거 쓰면 처음 로그인 시 값을 못받아와서 에러남 - 이슈해결
         })
         .catch((error) => {
           setLogInError(error.response?.data?.statusCode === 401);
