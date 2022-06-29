@@ -45,7 +45,7 @@ const Channel = () => {
           <span>{channelMembersData?.length}</span>
         </div>
       </Header>
-      <ChatList />
+      {/* <ChatList /> */}
       <ChatBox chat={chat} onChangeChat={onChangeChat} onSubmitForm={onSubmitForm} />
     </Container>
   );
