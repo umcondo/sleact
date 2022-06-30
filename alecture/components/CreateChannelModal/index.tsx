@@ -17,8 +17,8 @@ interface Props {
 
 const CreateChannelModal: FC<Props> = ({ show, onCloseModal, setShowCreateChannelModal }) => {
   const [newChannel, setNewChannel, onChangeNewChannel] = useInput('');
-  const { workspace, channel } = useParams<{ workspace: string; channel: string }>();
-  const { data, error, mutate } = useSWR<IUser | false>('/api/users', fetcher, { dedupingInterval: 2000 });
+  const { workspace } = useParams<{ workspace: string }>();
+  const { data } = useSWR<IUser | false>('/api/users', fetcher, { dedupingInterval: 2000 });
 
   const { data: channelData, mutate: channelMutate } = useSWR<IChannel[]>(
     data ? `/api/workspaces/${workspace}/channels` : null,

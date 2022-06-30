@@ -39,7 +39,6 @@ const Channel = () => {
   const {
     data: chatData,
     mutate: mutateChat,
-
     setSize,
   } = useSWRInfinite<IChat[]>(
     (index) => `/api/workspaces/${workspace}/channels/${channel}/chats?perPage=20&page=${index + 1}`,
@@ -115,7 +114,7 @@ const Channel = () => {
         });
       }
     },
-    [channel, myData],
+    [channel, myData, mutateChat],
   );
 
   useEffect(() => {
@@ -165,7 +164,13 @@ const Channel = () => {
           </button>
         </div>
       </Header>
-      <ChatList chatSections={chatSections} ref={scrollbarRef} setSize={setSize} isReachingEnd={isReachingEnd} />
+      <ChatList
+        chatSections={chatSections}
+        ref={scrollbarRef}
+        setSize={setSize}
+        isReachingEnd={isReachingEnd}
+        // isEmpty={isEmpty}
+      />
       <ChatBox chat={chat} onChangeChat={onChangeChat} onSubmitForm={onSubmitForm} />
       <InviteChannelModal
         show={showInviteChannelModal}

@@ -43,7 +43,7 @@ const Login = () => {
           console.log(error.response.data);
         });
     },
-    [email, password],
+    [email, password, mutate],
   );
 
   // 로그인 상태에서 login, logout path로 갔을때

@@ -9,6 +9,7 @@ interface Props {
   chatSections: { [key: string]: (IDM | IChat)[] };
   setSize: (f: (size: number) => number) => Promise<(IDM | IChat)[][] | undefined>;
   isReachingEnd: boolean;
+  // isEmpty: boolean;
 }
 const ChatList = forwardRef<Scrollbars, Props>(({ chatSections, setSize, isReachingEnd }, scrollRef) => {
   const onScroll = useCallback(
@@ -17,7 +18,9 @@ const ChatList = forwardRef<Scrollbars, Props>(({ chatSections, setSize, isReach
         console.log('가장 위');
         setSize((prevSize) => prevSize + 1).then(() => {
           // 스크롤 위치 유지
+
           const current = (scrollRef as MutableRefObject<Scrollbars>)?.current;
+          console.log(current, values.scrollHeight, current.getScrollHeight());
           if (current) {
             current.scrollTop(current.getScrollHeight() - values.scrollHeight);
           }

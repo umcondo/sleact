@@ -16,7 +16,9 @@ import useSWRInfinite from 'swr/infinite';
 import useSocket from '@hooks/useSocket';
 import makeSection from '@utils/makeSection';
 import Scrollbars from 'react-custom-scrollbars-2';
+import { toast } from 'react-toastify';
 
+const PAGE_SIZE = 20;
 const DirectMessage = () => {
   const { workspace, id } = useParams<{ workspace: string; id: string }>();
   const { data: userData } = useSWR(`/api/workspaces/${workspace}/users/${id}`, fetcher);
@@ -28,14 +30,23 @@ const DirectMessage = () => {
 
     setSize,
   } = useSWRInfinite<IDM[]>(
-    (index) => `/api/workspaces/${workspace}/dms/${id}/chats?perPage=20&page=${index + 1}`,
+    (index) => `/api/workspaces/${workspace}/dms/${id}/chats?perPage=${PAGE_SIZE}&page=${index + 1}`,
     fetcher,
+    {
+      onSuccess(data) {
+        if (data?.length === 1) {
+          setTimeout(() => {
+            scrollbarRef.current?.scrollToBottom();
+          }, 100);
+        }
+      },
+    },
   );
   const [socket] = useSocket(workspace);
   const isEmpty = chatData?.[0]?.length === 0;
   const isReachingEnd = isEmpty || (chatData && chatData[chatData.length - 1]?.length < 20) || false;
   const scrollbarRef = useRef<Scrollbars>(null);
-  const [dragOver, setDragOver] = useState(false);
+  // const [dragOver, setDragOver] = useState(false);
 
   const onSubmitForm = useCallback(
     (e: any) => {
@@ -62,42 +73,46 @@ const DirectMessage = () => {
           .post(`/api/workspaces/${workspace}/dms/${id}/chats`, {
             content: chat,
           })
-          .then(() => {
-            mutateChat();
-          })
-          .catch(() => {
-            mutateChat();
-            return console.error;
-          });
+          .catch(console.error);
       }
     },
     [chat, chatData, myData, userData, workspace, id, mutateChat, setChat],
   );
 
   // 실시간으로 채팅데이터 가져오기
-  const onMessage = useCallback((data: IDM) => {
-    // id는 상대방 아이디
-    if (data.SenderId === Number(id) && myData.id !== Number(id)) {
-      mutateChat((chatData) => {
-        // 가장 최신배열에 최신데이터넣기
-        chatData?.[0].unshift(data);
-        return chatData;
-      }, false).then(() => {
-        // 남이 메세지 보내도 가장 아래로 스크롤바 내려가지 않게
-        if (scrollbarRef.current) {
-          if (
-            scrollbarRef.current.getScrollHeight() <
-            scrollbarRef.current.getClientHeight() + scrollbarRef.current.getScrollTop() + 150
-          ) {
-            console.log('scrollToBottom!', scrollbarRef.current?.getValues());
-            setTimeout(() => {
-              scrollbarRef.current?.scrollToBottom();
-            }, 50);
+  const onMessage = useCallback(
+    (data: IDM) => {
+      // id는 상대방 아이디
+      if (data.SenderId === Number(id) && myData.id !== Number(id)) {
+        mutateChat((chatData) => {
+          // 가장 최신배열에 최신데이터넣기
+          chatData?.[0].unshift(data);
+          return chatData;
+        }, false).then(() => {
+          // 남이 메세지 보내도 가장 아래로 스크롤바 내려가지 않게
+          if (scrollbarRef.current) {
+            if (
+              scrollbarRef.current.getScrollHeight() <
+              scrollbarRef.current.getClientHeight() + scrollbarRef.current.getScrollTop() + 150
+            ) {
+              console.log('scrollToBottom!', scrollbarRef.current?.getValues());
+              setTimeout(() => {
+                scrollbarRef.current?.scrollToBottom();
+              }, 100);
+            } else {
+              toast.success('새 메시지가 도착했습니다.', {
+                onClick() {
+                  scrollbarRef.current?.scrollToBottom();
+                },
+                closeOnClick: true,
+              });
+            }
           }
-        }
-      });
-    }
-  }, []);
+        });
+      }
+    },
+    [id, myData, mutateChat],
+  );
 
   useEffect(() => {
     socket?.on('dm', onMessage);
@@ -119,7 +134,7 @@ const DirectMessage = () => {
     return null;
   }
 
-  const chatSections = makeSection(chatData ? chatData.flat().reverse() : []);
+  const chatSections = makeSection(chatData ? ([] as IDM[]).concat(...chatData).reverse() : []);
 
   return (
     <Container>
@@ -127,8 +142,20 @@ const DirectMessage = () => {
         <img src={gravatar.url(userData.email, { s: '24px', d: 'retro' })} alt={userData.nickname} />
         <span>{userData.nickname}</span>
       </Header>
-      <ChatList chatSections={chatSections} ref={scrollbarRef} setSize={setSize} isReachingEnd={isReachingEnd} />
-      <ChatBox chat={chat} onChangeChat={onChangeChat} onSubmitForm={onSubmitForm} />
+      <ChatList
+        chatSections={chatSections}
+        ref={scrollbarRef}
+        setSize={setSize}
+        isReachingEnd={isReachingEnd}
+        // isEmpty={isEmpty}
+      />
+      {/* <ChatBox chat={chat} onChangeChat={onChangeChat} onSubmitForm={onSubmitForm} /> */}
+      <ChatBox
+        onSubmitForm={onSubmitForm}
+        chat={chat}
+        onChangeChat={onChangeChat}
+        placeholder={`Message ${userData.nickname}`}
+      />
     </Container>
   );
 };

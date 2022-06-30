@@ -39,10 +39,21 @@ const Channel = loadable(() => import('@pages/Channel'));
 const DirectMessage = loadable(() => import('@pages/DirectMessage'));
 
 const Workspace = () => {
+  const [showUserMenu, setShowUserMenu] = useState(false);
+  const [showWorkspaceModal, setShowWorkspaceModal] = useState(false);
+  const [showInviteWorkspaceModal, setShowInviteWorkspaceModal] = useState(false);
+  const [showInviteChannelModal, setShowInviteChannelModal] = useState(false);
+
+  const [showCreateWorkspaceModal, setShowCreateWorkspaceModal] = useState(false);
+  const [showCreateChannelModal, setShowCreateChannelModal] = useState(false);
+
+  const [newWorkspace, setNewWorkspace, onChangeNewWorkspace] = useInput('');
+  const [newUrl, setnewUrl, onChangeNewUrl] = useInput('');
+
   const { workspace } = useParams<{ workspace: string }>();
 
   // 유저 데이터
-  const { data, error, mutate } = useSWR<IUser | false>('/api/users', fetcher, { dedupingInterval: 2000 });
+  const { data, mutate } = useSWR<IUser | false>('/api/users', fetcher);
 
   // 채널 데이터, 조건부 요청
   const { data: channelData } = useSWR<IChannel[]>(data ? `/api/workspaces/${workspace}/channels` : null, fetcher);
@@ -73,17 +84,6 @@ const Workspace = () => {
       mutate(false, false); // 두번째 자리에 false를 넣어야 다시 안감
     });
   }, [mutate]);
-
-  const [showUserMenu, setShowUserMenu] = useState(false);
-  const [showWorkspaceModal, setShowWorkspaceModal] = useState(false);
-  const [showInviteWorkspaceModal, setShowInviteWorkspaceModal] = useState(false);
-  const [showInviteChannelModal, setShowInviteChannelModal] = useState(false);
-
-  const [showCreateWorkspaceModal, setShowCreateWorkspaceModal] = useState(false);
-  const [showCreateChannelModal, setShowCreateChannelModal] = useState(false);
-
-  const [newWorkspace, setNewWorkspace, onChangeNewWorkspace] = useInput('');
-  const [newUrl, setnewUrl, onChangeNewUrl] = useInput('');
 
   const onClickUserProfile = useCallback(() => {
     setShowUserMenu((prev) => !prev);
