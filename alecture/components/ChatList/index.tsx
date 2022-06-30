@@ -6,7 +6,7 @@ import React, { useCallback, forwardRef, MutableRefObject, RefObject, FC } from 
 import { Scrollbars } from 'react-custom-scrollbars-2';
 
 interface Props {
-  chatSections: { [key: string]: IDM[] };
+  chatSections: { [key: string]: (IDM | IChat)[] };
   setSize: (f: (size: number) => number) => Promise<(IDM | IChat)[][] | undefined>;
   isReachingEnd: boolean;
 }

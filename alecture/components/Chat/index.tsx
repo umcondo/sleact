@@ -6,11 +6,11 @@ import dayjs from 'dayjs';
 import regexifyString from 'regexify-string';
 import { Link, useParams } from 'react-router-dom';
 interface Props {
-  data: IDM;
+  data: IDM | IChat;
 }
 const Chat: FC<Props> = ({ data }) => {
   const { workspace } = useParams<{ workspace: string }>();
-  const user = data.Sender; // DM보낸사람
+  const user = 'Sender' in data ? data.Sender : data.User; // DM보낸사람, 채널이냐 DM이냐
 
   // @[제로초1](7)
   // \d 숫자, +는 1개 이상 ?는 0개나 1개

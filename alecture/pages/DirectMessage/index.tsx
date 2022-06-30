@@ -74,15 +74,30 @@ const DirectMessage = () => {
     [chat, chatData, myData, userData, workspace, id, mutateChat, setChat],
   );
 
-  const onMessage = useCallback(
-    (data: IDM) => {
-      // id는 상대방 아이디
-      if (data.SenderId === Number(id) && myData.id !== Number(id)) {
-        mutateChat();
-      }
-    },
-    [id, mutateChat, myData.id],
-  );
+  // 실시간으로 채팅데이터 가져오기
+  const onMessage = useCallback((data: IDM) => {
+    // id는 상대방 아이디
+    if (data.SenderId === Number(id) && myData.id !== Number(id)) {
+      mutateChat((chatData) => {
+        // 가장 최신배열에 최신데이터넣기
+        chatData?.[0].unshift(data);
+        return chatData;
+      }, false).then(() => {
+        // 남이 메세지 보내도 가장 아래로 스크롤바 내려가지 않게
+        if (scrollbarRef.current) {
+          if (
+            scrollbarRef.current.getScrollHeight() <
+            scrollbarRef.current.getClientHeight() + scrollbarRef.current.getScrollTop() + 150
+          ) {
+            console.log('scrollToBottom!', scrollbarRef.current?.getValues());
+            setTimeout(() => {
+              scrollbarRef.current?.scrollToBottom();
+            }, 50);
+          }
+        }
+      });
+    }
+  }, []);
 
   useEffect(() => {
     socket?.on('dm', onMessage);

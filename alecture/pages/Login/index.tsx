@@ -19,10 +19,12 @@ const Login = () => {
   const [logInError, setLogInError] = useState(false);
   const [email, , onChangeEmail] = useInput('');
   const [password, , onChangePassword] = useInput('');
+  const [loginErrorMessage, setLoginErrorMessage] = useState('');
   const onSubmit = useCallback(
     (e: any) => {
       e.preventDefault();
       setLogInError(false);
+      setLoginErrorMessage('');
       axios
         .post(
           '/api/users/login',
@@ -37,6 +39,8 @@ const Login = () => {
         })
         .catch((error) => {
           setLogInError(error.response?.data?.statusCode === 401);
+          setLoginErrorMessage(error.response.data);
+          console.log(error.response.data);
         });
     },
     [email, password],
@@ -88,6 +92,7 @@ const Login = () => {
             <Input type="password" id="password" name="password" value={password} onChange={onChangePassword} />
           </div>
           {logInError && <Error>이메일과 비밀번호 조합이 일치하지 않습니다.</Error>}
+          {loginErrorMessage && <Error>{loginErrorMessage}</Error>}
         </Label>
         <Button type="submit">로그인</Button>
       </Form>

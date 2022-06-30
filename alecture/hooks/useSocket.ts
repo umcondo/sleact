@@ -7,7 +7,7 @@ const sockets: { [key: string]: SocketIOClient.Socket } = {};
 // key - 워크스페이스(문자열)
 
 const useSocket = (workspace?: string): [SocketIOClient.Socket | undefined, () => void] => {
-  console.log('rerender', workspace);
+  // console.log('rerender', workspace);
   // 연결 해제
   const disconnect = useCallback(() => {
     if (workspace) {
@@ -27,9 +27,9 @@ const useSocket = (workspace?: string): [SocketIOClient.Socket | undefined, () =
       transports: ['websocket'], // http쓰지말고 websocket만 써
     });
   }
-  console.log(sockets);
-  // socket.emit() 이벤트 비슷
-  sockets[workspace].emit('hello', 'world');
+  // console.log(sockets);
+  // // socket.emit() 이벤트 비슷
+  // sockets[workspace].emit('hello', 'world');
 
   // socket.on() 이벤트리스너 비슷
   sockets[workspace].on('message', (data: any) => {
