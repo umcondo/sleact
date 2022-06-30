@@ -17,30 +17,33 @@ const Login = () => {
   // });
 
   const [logInError, setLogInError] = useState(false);
+  const [loginErrorMessage, setLoginErrorMessage] = useState('');
+
   const [email, , onChangeEmail] = useInput('');
   const [password, , onChangePassword] = useInput('');
-  const [loginErrorMessage, setLoginErrorMessage] = useState('');
+
   const onSubmit = useCallback(
     (e: any) => {
       e.preventDefault();
       setLogInError(false);
       setLoginErrorMessage('');
+
       axios
         .post(
           '/api/users/login',
           { email, password },
           {
-            withCredentials: true,
+            // withCredentials: true,
           },
         )
-        .then((response) => {
+        .then(() => {
           // mutate(response.data, false); // OPTIMISTIC UI
           mutate(); // 위에거 쓰면 처음 로그인 시 값을 못받아와서 에러남 - 이슈해결
         })
         .catch((error) => {
           setLogInError(error.response?.data?.statusCode === 401);
           setLoginErrorMessage(error.response.data);
-          console.log(error.response.data);
+          // console.log(error.response.data);
         });
     },
     [email, password, mutate],
@@ -49,6 +52,7 @@ const Login = () => {
   // 로그인 상태에서 login, logout path로 갔을때
   // 잠깐 보이고 리다이렉트되는 것이 아니라 로딩중이라는 페이지가 보이도록
 
+  // 비동기 처리가 성공해서 데이터가 들어오기 전 까지
   if (data === undefined) {
     return <div>로딩중</div>;
   }
@@ -91,7 +95,6 @@ const Login = () => {
           <div>
             <Input type="password" id="password" name="password" value={password} onChange={onChangePassword} />
           </div>
-          {logInError && <Error>이메일과 비밀번호 조합이 일치하지 않습니다.</Error>}
           {loginErrorMessage && <Error>{loginErrorMessage}</Error>}
         </Label>
         <Button type="submit">로그인</Button>

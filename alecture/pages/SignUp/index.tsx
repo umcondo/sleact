@@ -47,29 +47,30 @@ const SignUp = () => {
   const onSubmit = useCallback(
     (e: React.FormEvent<HTMLFormElement>) => {
       e.preventDefault(); //SPA이므로
-      console.log(email, nickname, password, passwordCheck);
+      // console.log(email, nickname, password, passwordCheck);
       if (!mismatchError && nickname) {
         // 초기화 - 요청별로 다른 결과 보여주기 위해, 이전 결과가 남아있을 수도 있다. 비동기이므로
         setSignUpError('');
         setSignUpSuccess(false);
-        console.log('서버로 회원가입 하기');
+        // console.log('서버로 회원가입 하기');
         axios
           // .post('/api/users', { email, nickname, password })
-          .post('/api/users', { email, nickname, password }, { withCredentials: true }) // 3095 -> 3095, 3090 -> 3095(기존)
+          .post('/api/users', { email, nickname, password })
+          // , { withCredentials: true }) // 3095 -> 3095, 3090 -> 3095(기존)
           .then((response) => {
             // 성공
-            console.log(response);
+            // console.log(response);
             setSignUpSuccess(true);
           })
           .catch((error) => {
             // 실패
-            console.log(error.response);
+            // console.log(error.response);
             setSignUpError(error.response.data);
           })
           .finally(() => {}); // 어찌되든 실행
       }
     },
-    [email, nickname, password, passwordCheck, mismatchError],
+    [email, nickname, password, mismatchError],
   );
 
   if (data === undefined) {
